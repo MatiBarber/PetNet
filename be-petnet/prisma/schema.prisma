@@ -1,0 +1,54 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Usuario {
+  id        Int    @id @default(autoincrement())
+  nombre    String
+  apellido  String
+  email     String @unique
+  password  String
+  telefono  String
+  provincia String
+  localidad String
+  publicaciones Publicacion[]
+  solicitudes Solicitud[]
+}
+
+model Publicacion {
+  id        Int    @id @default(autoincrement())
+  foto    String
+  estado  String
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  Mascota   Mascota[]
+  solicitudes Solicitud[]
+}
+
+model Mascota {
+  id            Int    @id @default(autoincrement())
+  nombre      String
+  sexo        String
+  tipo        String
+  tamaño      String
+  descripcion String
+  publicacionId Int
+  publicacion Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+}
+
+model Solicitud {
+  id        Int    @id @default(autoincrement())
+  estado    String
+  mensaje   String
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  publicacionId Int
+  publicacion Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+
+  @@unique ([usuarioId, publicacionId])
+}
